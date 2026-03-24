@@ -1,18 +1,30 @@
-require('dotenv').config();
+import 'dotenv/config';
 
-const express = require('express');
-const cors = require('cors');
-const pinoHttp = require('pino-http');
+import express from 'express';
+import cors from 'cors';
+import pino from 'pino-http';
+import helmet from 'helmet';
+
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
+app.use(helmet());
 app.use(express.json());
+
 app.use(
-  pinoHttp({
+  pino({
+    level: 'info',
     transport: {
       target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'HH:MM:ss',
+        ignore: 'pid,hostname',
+        messageFormat: '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
+        hideObject: true,
+      },
     },
   }),
 );
@@ -42,8 +54,12 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
+  const isProd = process.env.NODE_ENV === "production";
+
   res.status(500).json({
-    message: err.message,
+    message: isProd
+      ? "Something went wrong. Please try again later."
+      : err.message,
   });
 });
 
