@@ -3,6 +3,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import { errors } from 'celebrate';
 
 import notesRoutes from './routes/notesRoutes.js';
 import { logger } from './middleware/logger.js';
@@ -24,6 +25,7 @@ const startServer = async () => {
   app.use(notesRoutes);
 
   app.use(notFoundHandler);
+  app.use(errors());
   app.use(errorHandler);
 
   app.listen(PORT, () => {
