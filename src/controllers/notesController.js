@@ -14,8 +14,8 @@ export const getAllNotes = async (req, res) => {
     filter.tag = tag;
   }
 
-  if (typeof search === 'string' && search.trim() !== '') {
-    filter.$text = { $search: search.trim() };
+  if (search) {
+    filter.$text = { $search: search };
   }
 
   const [totalNotes, notes] = await Promise.all([
