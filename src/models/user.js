@@ -30,12 +30,10 @@ userSchema.method('toJSON', function () {
   return obj;
 });
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function () {
   if (!this.username) {
     this.username = this.email;
   }
-
-  next();
 });
 
 export const User = mongoose.model('User', userSchema);
