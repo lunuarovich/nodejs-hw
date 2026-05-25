@@ -66,12 +66,8 @@ export const loginUser = async (req, res) => {
 export const refreshUserSession = async (req, res) => {
   const { sessionId, refreshToken } = req.cookies;
 
-  if (!refreshToken) {
-    throw createHttpError(401, 'Missing refresh token');
-  }
-
   const session = await Session.findOne({
-    ...(sessionId && { _id: sessionId }),
+    _id: sessionId,
     refreshToken,
   });
 
@@ -93,48 +89,11 @@ export const refreshUserSession = async (req, res) => {
   });
 };
 
-export const checkUserSession = async (req, res) => {
-  const { sessionId, refreshToken } = req.cookies;
-
-  if (!refreshToken) {
-    throw createHttpError(401, 'Missing refresh token');
-  }
-
-  const session = await Session.findOne({
-    ...(sessionId && { _id: sessionId }),
-    refreshToken,
-  });
-
-  if (!session) {
-    throw createHttpError(401, 'Session not found');
-  }
-
-  if (new Date() > session.refreshTokenValidUntil) {
-    throw createHttpError(401, 'Session token expired');
-  }
-
-  await Session.deleteOne({ _id: session._id });
-
-  const newSession = await createSession(session.userId);
-  setSessionCookies(res, newSession);
-
-  res.status(200).json({
-    success: true,
-  });
-};
-
 export const logoutUser = async (req, res) => {
-  const { accessToken, refreshToken, sessionId } = req.cookies;
+  const { sessionId } = req.cookies;
 
   if (sessionId) {
     await Session.deleteOne({ _id: sessionId });
-  } else if (refreshToken || accessToken) {
-    await Session.deleteOne({
-      $or: [
-        ...(refreshToken ? [{ refreshToken }] : []),
-        ...(accessToken ? [{ accessToken }] : []),
-      ],
-    });
   }
 
   clearSessionCookies(res);

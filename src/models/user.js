@@ -30,8 +30,6 @@ const userSchema = new mongoose.Schema(
 
 userSchema.method('toJSON', function () {
   const obj = this.toObject();
-  obj.id = obj._id.toString();
-  delete obj._id;
   delete obj.password;
   return obj;
 });
