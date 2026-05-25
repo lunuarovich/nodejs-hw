@@ -3,6 +3,7 @@ import { celebrate } from 'celebrate';
 import {
   registerUser,
   loginUser,
+  checkUserSession,
   refreshUserSession,
   logoutUser,
   requestResetEmail,
@@ -19,6 +20,7 @@ const router = Router();
 
 router.post('/auth/register', celebrate(registerUserSchema), registerUser);
 router.post('/auth/login', celebrate(loginUserSchema), loginUser);
+router.get('/auth/session', checkUserSession);
 router.post(
   '/auth/request-reset-email',
   celebrate(requestResetEmailSchema),

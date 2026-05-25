@@ -31,4 +31,12 @@ const noteSchema = new mongoose.Schema(
 
 noteSchema.index({ title: 'text', content: 'text' });
 
+noteSchema.method('toJSON', function () {
+  const obj = this.toObject();
+  obj.id = obj._id.toString();
+  delete obj._id;
+  delete obj.__v;
+  return obj;
+});
+
 export const Note = mongoose.model('Note', noteSchema);
